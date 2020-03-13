@@ -3,7 +3,8 @@
 -- main.lua
 -- ICS2O Programming
 -- This program displays three images that move around the screen. One of them moves
--- diagonally, one shrinks and one that fades out of the screen. 
+-- diagonally, one shrinks and one that fades out of the screen. One of the obejcts spins
+-- and moves in a parabolic path.
 -----------------------------------------------------------------------------------------
 
 -- hide the status bar on the iPad
@@ -84,9 +85,6 @@ local function MoveMonkey (event)
 	timer.performWithDelay(10000)
 end
 
--- MoveMonkey will be called over and over again
-Runtime:addEventListener("enterFrame", MoveMonkey)
-
 -----------------------------------------------------------------------------------------
 -- PARROT FUNCTION
 -----------------------------------------------------------------------------------------
@@ -117,9 +115,6 @@ local function MoveParrot (event)
 	end
 end
 
--- MoveParrot will be called over and over again
-Runtime:addEventListener("enterFrame", MoveParrot)
-
 -----------------------------------------------------------------------------------------
 -- TIGER FUNCTION
 -----------------------------------------------------------------------------------------
@@ -144,8 +139,6 @@ local function MoveTiger (event)
 	tiger.yScale = tiger.yScale + scrollSpeedTiger2
 end
 
--- MoveTiger will be called over and over again
-Runtime:addEventListener("enterFrame", MoveTiger)
 
 -----------------------------------------------------------------------------------------
 -- TEXT OBJECT
@@ -156,3 +149,17 @@ local screenText = display.newText("In the Jungle", 750, 250, 'Times New Roman',
 
 -- change the color of the text
 screenText:setTextColor( 86/255, 202/255, 238/255)
+
+-----------------------------------------------------------------------------------------
+-- FUNCTION CALLS
+-----------------------------------------------------------------------------------------
+
+-- MoveMonkey will be called over and over again
+Runtime:addEventListener("enterFrame", MoveMonkey)
+
+-- MoveParrot will be called over and over again
+Runtime:addEventListener("enterFrame", MoveParrot)
+
+-- MoveTiger will be called over and over again
+Runtime:addEventListener("enterFrame", MoveTiger)
+
