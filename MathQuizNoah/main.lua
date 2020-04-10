@@ -63,9 +63,11 @@ local clockText
 local countDownTimer
 
 -- variables for the heart
-local lives = 5
+local lives = 4
 local heart1
 local heart2
+local heart3
+local heart4
 
 local stopGame = false
 
@@ -108,9 +110,7 @@ local function LoseLives()
 
 	secondsLeft = totalSeconds
 
-	if (lives == 4) then
-		heart4.isVisible = false
-	elseif (lives == 3) then
+	if (lives == 3) then
 		heart3.isVisible = false
 	elseif (lives == 2) then
 		heart2.isVisible = false
@@ -212,10 +212,13 @@ local function AskQuestion()
          -- create question in text object
         questionObject.text = divRandomNumber1 .. " / " .. divRandomNumber2 .. " = "
 
-    elseif (randomOperator == 5) then
-    	while (counter <= expRandomNumber2)
-    		do correctAnswer = correctAnswer * expRandomNumber1
-    			counter = counter + 1
+    elseif (randomOperator == 5) then	
+    	-- initializations
+    	counter = 1
+
+    	while (counter <= expRandomNumber2) do
+    		correctAnswer = correctAnswer * expRandomNumber1
+    		counter = counter + 1
     	end
     
     	questionObject.text = expRandomNumber1 .. " ^ " .. expRandomNumber2 .. " = "
@@ -338,10 +341,6 @@ heart2.y = display.contentWidth * 1 / 7
 heart3 = display.newImageRect("Images/heart.png", 100, 100)
 heart3.x = display.contentWidth * 5 / 8
 heart3.y = display.contentWidth * 1 / 7
-
-heart4 = display.newImageRect("Images/heart.png", 100, 100)
-heart4.x = display.contentWidth * 4 / 8
-heart4.y = display.contentWidth * 1 / 7
 
 -- display the amount of points as a text object
 pointsText = display.newText("Points = " .. points, display.contentWidth*(1/4), display.contentHeight*(1/5), nil, 50)
