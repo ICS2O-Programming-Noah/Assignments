@@ -28,13 +28,30 @@ local numericField
 local randomNumber1
 local randomNumber2
 
+local mulRandomNumber1
+local mulRandomNumber2
+
+local divRandomNumber1
+local divRandomNumber2
+
+local factRandomNumber1
+local factRandomNumber2
+
+local sqrtRandomNumber1
+local sqrtRandomNumber2
+
+local expRandomNumber1
+local expRandomNumber2
+
 local userAnswer
-local correctAnswer = 1
+local correctAnswer
 local correctAnswerText
 local incorrectAnswer
-local counter = 1
+local counter
+local tempAnswer
 
 local gameOver
+local youWin
 
 local points = 0
 local wrongs = 0
@@ -75,6 +92,10 @@ local backgroundSoundChannel
 -- Play the background music when the game begins
 backgroundSoundChannel = audio.play(backgroundSound)
 
+-- You Win sound
+local youWinSound = audio.loadSound("Sounds/youWin.mp3")
+local youWinSoundChannel
+
 ------------------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 ------------------------------------------------------------------------------------------------
@@ -106,14 +127,42 @@ local function LoseLives()
 	end
 end
 
+local function YouWin()
+	if (points == 5) then
+		numericField.isVisible = false
+		timer.cancel(countDownTimer)
+		youWinSoundChannel = audio.play(youWinSound)
+		youWin.isVisible = true
+		incorrectObject.isVisible = false
+		clockText.isVisible = false
+		stopGame = true
+		backgroundSound = audio.stop(backgroundSoundChannel)
+	end
+end
+
 local function AskQuestion()
     -- generate a random number between 1 and 4
-    randomOperator = math.random(1, 4)
+    randomOperator = math.random(1, 7)
 
 	-- generate 2 random numbers between a max. and a min. number
-	randomNumber1 = math.random(0, 4)
-    randomNumber2 = math.random(0, 4)
-    
+	randomNumber1 = math.random(1, 20)
+    randomNumber2 = math.random(1, 20)
+   
+    mulRandomNumber1 = math.random(1, 10)
+    mulRandomNumber2 = math.random(1, 10)
+   
+    divRandomNumber1 = math.random(1, 10)
+    divRandomNumber2 = math.random(1, 10)
+
+    factRandomNumber1 = math.random(1, 5)
+    factRandomNumber2 = math.random(1, 5)
+
+    sqrtRandomNumber1 = math.random(1, 10)
+    sqrtRandomNumber2 = math.random(1, 10)
+
+    expRandomNumber1 = math.random(1, 5)
+    expRandomNumber2 = math.random(1, 5)
+
     -- if the random operator is 1, then do addition
     if (randomOperator == 1) then
 
@@ -145,25 +194,49 @@ local function AskQuestion()
     elseif (randomOperator == 3) then
 
         -- calculate the correct answer
-        correctAnswer = randomNumber1*randomNumber2
-
+        correctAnswer = mulRandomNumber1*mulRandomNumber2
+                      
         -- create question in text object
-        questionObject.text = randomNumber1 .. " * " .. randomNumber2 .. " = "
+        questionObject.text = mulRandomNumber1 .. " * " .. mulRandomNumber2 .. " = "
 
      -- otherwise, if the random operator is 4, do division
     elseif (randomOperator == 4) then
+    	-- make it so that you have perfect division
 
+    	tempAnswer = divRandomNumber1 * divRandomNumber2
+    	divRandomNumber1 = tempAnswer
+    	correctAnswer = divRandomNumber1 / divRandomNumber2
         -- calculate the correct answer
-        correctAnswer = randomNumber1/randomNumber2
-		correctAnswer = correctAnswer * 10
-		correctAnswer = math.round(correctAnswer)
-		correctAnswer = correctAnswer / 10
+        
 
          -- create question in text object
-        questionObject.text = randomNumber1 .. " / " .. randomNumber2 .. " = "
-    elseif (randomOperator == 5) then
-    	while ()
+        questionObject.text = divRandomNumber1 .. " / " .. divRandomNumber2 .. " = "
 
+    elseif (randomOperator == 5) then
+    	while (counter <= expRandomNumber2)
+    		do correctAnswer = correctAnswer * expRandomNumber1
+    			counter = counter + 1
+    	end
+    
+    	questionObject.text = expRandomNumber1 .. " ^ " .. expRandomNumber2 .. " = "
+
+    elseif (randomOperator == 6) then
+    	-- initializations
+    	correctAnswer = 1
+    	counter = 1
+
+    	while (counter <= factRandomNumber1) do
+			correctAnswer = correctAnswer * counter
+    			counter = counter + 1
+    	end
+
+    	questionObject.text = factRandomNumber1 .. "!" .. " = "
+
+    elseif (randomOperator == 7) then
+    	sqrtRandomNumber1  = sqrtRandomNumber2 * sqrtRandomNumber2
+    	correctAnswer = math.sqrt(sqrtRandomNumber1)
+
+    	questionObject.text = " √ " .. sqrtRandomNumber1 .. " = "
     end
 end
 
@@ -232,7 +305,7 @@ local function NumericFieldListener( event )
 			-- perform HideCorrect with a delay and clear the text field
 			timer.performWithDelay(1500, HideCorrect)
 			event.target.text = ""
-
+			YouWin()
 		else
 
 			-- display "Incorrect!", show the right answer, and subtract one life
@@ -296,9 +369,16 @@ incorrectObject.isVisible = false
 -- create game over image
 gameOver = display.newImageRect("Images/0lives.jpg", 300, 300)
 gameOver.x = display.contentWidth * 1 / 2
-gameOver.y = display.contentWidth * 1 / 3
+gameOver.y = display.contentHeight * 1 / 2
 gameOver:scale(3, 3)
 gameOver.isVisible = false
+
+--create winning image
+youWin = display.newImageRect("Images/you_win.png", 300, 300)
+youWin.x = display.contentWidth * 1 / 2
+youWin.y = display.contentHeight * 1 / 2
+youWin:scale(3, 3)
+youWin.isVisible = false
 
 -- create numeric field
 numericField = native.newTextField(display.contentWidth*(3/4), display.contentHeight/2, 150, 100)
