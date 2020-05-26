@@ -1,10 +1,10 @@
 -----------------------------------------------------------------------------------------
 --
 -- splash_screen.lua
--- Created by: Your Name
--- Date: Month Day, Year
--- Description: This is the splash screen of the game. It displays the 
--- company logo that...
+-- Created by: Noah Sabbagh
+-- Date: May 25, 2020
+-- Description: This is the splash screen of the game. It animates part of my  
+-- company logo to come together on the screen.
 -----------------------------------------------------------------------------------------
 
 -- Use Composer Library
@@ -18,30 +18,146 @@ sceneName = "splash_screen"
 -- Create Scene Object
 local scene = composer.newScene( sceneName )
 
+
+----------------------------------------------------------------------------------------
+-- GLOBAL VARIABLES
+----------------------------------------------------------------------------------------
+
+scrollSpeedText = -5
+scrollSpeedLine1 = 4
+scrollSpeedLine2 = -4
+scrollSpeedLine3 = 4
+scrollSpeedLine4 = -4
+movingText = true
+movingLine1 = true
+movingLine2 = true
+movingLine3 = true
+movingLine4 = true
+
 ----------------------------------------------------------------------------------------
 -- LOCAL VARIABLES
 -----------------------------------------------------------------------------------------
  
 -- The local variables for this scene
-local beetleship
-local scrollXSpeed = -11
-local scrollYSpeed = -3
-local jungleSounds = audio.loadSound("Sounds/animals144.mp3")
-local jungleSoundsChannel
+local text
+local line1
+local line2
+local line3
+local line4
+local background
+local sciFiSound = audio.loadSound("Sounds/scifi005.mp3")
+local sciFiSoundChannel
+
 
 --------------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 --------------------------------------------------------------------------------------------
 
--- The function that moves the beetleship across the screen
-local function moveBeetleship()
-    beetleship.x = beetleship.x + scrollXSpeed
-    beetleship.y = beetleship.y + scrollYSpeed
+--------------------------------------------------------------------------------------------
+-- MOVING TEXT FUNCTIONS
+--------------------------------------------------------------------------------------------
+
+local function MovingText()
+    if (movingText == true) then
+        text.x = text.x + scrollSpeedText
+    end
+
+    if (movingText == false) then
+        text.x = 495
+    end
 end
 
+local function StopText()
+    if (text.x <= 495) then
+        movingText = false
+    end
+end
+
+--------------------------------------------------------------------------------------------
+-- MOVING LINE 1 FUNCTIONS
+--------------------------------------------------------------------------------------------
+
+local function MovingLine1()
+    if (movingLine1 == true) then
+        line1.x = line1.x + scrollSpeedLine1
+    end
+
+    if (movingLine1 == false) then
+        line1.x = 165
+    end
+end
+
+local function StopMovingLine1()
+    if (line1.x >= 165) then
+        movingLine1 = false
+    end
+end
+
+--------------------------------------------------------------------------------------------
+-- MOVING LINE 2 FUNCTIONS
+--------------------------------------------------------------------------------------------
+
+local function MovingLine2()
+    if (movingLine2 == true) then
+        line2.x = line2.x + scrollSpeedLine2
+    end
+
+    if (movingLine2 == false) then
+        line2.x = 817
+    end
+end
+
+local function StopMovingLine2()
+    if (line2.x <= 817) then
+        movingLine2 = false
+    end
+end
+
+--------------------------------------------------------------------------------------------
+-- MOVING LINE 3 FUNCTIONS
+--------------------------------------------------------------------------------------------
+
+local function MovingLine3()
+    if (movingLine3 == true) then
+        line3.y = line3.y + scrollSpeedLine3
+    end
+
+    if (movingLine3 == false) then
+        line3.y = 100
+    end
+end
+
+local function StopMovingLine3()
+    if (line3.y >= 100) then
+        movingLine3 = false
+    end
+end
+
+--------------------------------------------------------------------------------------------
+-- MOVING LINE 4 FUNCTIONS
+--------------------------------------------------------------------------------------------
+
+local function MovingLine4()
+    if (movingLine4 == true) then
+        line4.y = line4.y + scrollSpeedLine4
+    end
+
+    if (movingLine4 == false) then
+        line4.y = 610
+    end
+end
+
+local function StopMovingLine4()
+    if (line4.y <= 610) then
+        movingLine4 = false
+    end
+end
+
+--------------------------------------------------------------------------------------------
+
 -- The function that will go to the main menu 
-local function gotoMainMenu()
-    composer.gotoScene( "main_menu" )
+local function MainMenuScreenTransition()
+    composer.gotoScene( "main_menu", {effect = "zoomOutIn", time = 1000} )
 end
 
 -----------------------------------------------------------------------------------------
@@ -54,18 +170,55 @@ function scene:create( event )
     -- Creating a group that associates objects with the scene
     local sceneGroup = self.view
 
-    -- set the background to be black
-    display.setDefault("background", 0, 0, 0)
+    -- insert the background
+    background = display.newImageRect("Images/background.png", 1024, 768)
+    background.anchorX = 0
+    background.anchorY = 0
 
-    -- Insert the beetleship image
-    beetleship = display.newImageRect("Images/beetleship.png", 200, 200)
+    -- Insert the text image
+    text = display.newImageRect("Images/text.png", 500, 100)
 
-    -- set the initial x and y position of the beetleship
-    beetleship.x = 504
-    beetleship.y = display.contentHeight/2
+    -- set the initial x and y position of the text
+    text.x = 1024
+    text.y = 340
+
+    -- Insert the line image
+    line1 = display.newImageRect("Images/line1.png", 525, 25)
+
+    -- set the initial x and y position of line 1
+    line1.x = 0
+    line1.y = 353
+    line1:rotate(90)
+
+    -- Insert the line image
+    line2 = display.newImageRect("Images/line2.png", 525, 25)
+
+    -- set the initial x and y position of line 1
+    line2.x = 1024
+    line2.y = 353
+    line2:rotate(90)
+
+    -- Insert the line image
+    line3 = display.newImageRect("Images/line3.png", 640, 25)
+
+    -- set the initial x and y position of line 1
+    line3.x = 492  
+    line3.y = 0
+
+    -- Insert the line image
+    line4 = display.newImageRect("Images/line4.png", 640, 25)
+
+    -- set the initial x and y position of line 1
+    line4.x = 492
+    line4.y = 768
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
-    sceneGroup:insert( beetleship )
+    sceneGroup:insert( background )
+    sceneGroup:insert( text )
+    sceneGroup:insert( line1 )
+    sceneGroup:insert( line2 )
+    sceneGroup:insert( line3 )
+    sceneGroup:insert( line4 )
 
 end -- function scene:create( event )
 
@@ -90,13 +243,25 @@ function scene:show( event )
 
     elseif ( phase == "did" ) then
         -- start the splash screen music
-        jungleSoundsChannel = audio.play(jungleSounds )
+        sciFiSoundChannel = audio.play( sciFiSound, {channel = 1, loops = -1} )
 
-        -- Call the moveBeetleship function as soon as we enter the frame.
-        Runtime:addEventListener("enterFrame", moveBeetleship)
+        Runtime:addEventListener("enterFrame", MovingText)
+        Runtime:addEventListener("enterFrame", StopText)
+
+        Runtime:addEventListener("enterFrame", MovingLine1)
+        Runtime:addEventListener("enterFrame", StopMovingLine1)
+
+        Runtime:addEventListener("enterFrame", MovingLine2)
+        Runtime:addEventListener("enterFrame", StopMovingLine2)
+
+        Runtime:addEventListener("enterFrame", MovingLine3)
+        Runtime:addEventListener("enterFrame", StopMovingLine3)
+
+        Runtime:addEventListener("enterFrame", MovingLine4)
+        Runtime:addEventListener("enterFrame", StopMovingLine4)
 
         -- Go to the main menu screen after the given time.
-        timer.performWithDelay ( 3000, gotoMainMenu)          
+        timer.performWithDelay ( 3400, MainMenuScreenTransition)          
         
     end
 
@@ -123,8 +288,7 @@ function scene:hide( event )
     -- Called immediately after scene goes off screen.
     elseif ( phase == "did" ) then
         
-        -- stop the jungle sounds channel for this screen
-        audio.stop(jungleSoundsChannel)
+        audio.stop(sciFiSoundChannel)
     end
 
 end --function scene:hide( event )

@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------------------
 --
 -- main.lua
--- Created by: Your Name
--- Date: Month Day, Year
+-- Created by: Noah Sabbagh
+-- Date: May 25, 2020
 -- Description: This calls the splash screen of the app to load itself.
 -----------------------------------------------------------------------------------------
 
@@ -18,3 +18,6 @@ local composer = require( "composer" )
 
 -- Go to the intro screen
 composer.gotoScene( "splash_screen" )
+
+-- hide the status Bar
+display.setStatusBar(display.HiddenStatusBar)
