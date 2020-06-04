@@ -75,7 +75,7 @@ function scene:create( event )
     {
         -- Setting Position
         x = display.contentWidth*1/8,
-        y = display.contentHeight*15/16,
+        y = display.contentHeight*14/16,
 
         -- setting the dimensions
 
@@ -118,6 +118,7 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+        AddMuteUnMuteListeners()
     end
 
 end -- function scene:show( event )
@@ -145,6 +146,7 @@ function scene:hide( event )
 
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
+        RemoveMuteUnMuteListeners()
     end
 
 end --function scene:hide( event )
