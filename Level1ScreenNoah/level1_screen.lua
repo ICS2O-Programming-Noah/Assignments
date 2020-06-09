@@ -158,34 +158,6 @@ local function MoveFireball1()
     if (moveFireballH == true) then
        fireball1.x = fireball1.x + scrollSpeedFireball
     end
-
-    if (moveFireballH == false) then
-        fireball1.y = fireball.y + scrollSpeedFireball
-    end
-
-    if (fireball1.x >= 400) then
-        moveFireball = false
-    end
-
-    if (moveFireballV == false) then
-        fireball1.x = fireball1.x - scrollSpeedFireball
-    end
-
-    if (moveFireballV == true) then
-        fireball1.y = fireball1.y - scrollSpeedFireball
-    end
-
-    if (fireball1.y == 700) then
-        moveFireballV = false
-    end
-
-    if (fireball1.x == 300) then
-        moveFireballV = true
-    end
-
-    if (fireball1.y == 600) then
-        moveFireballH = true
-    end
 end
 
 local function Mute (touch)
