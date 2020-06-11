@@ -34,9 +34,11 @@ local scene = composer.newScene( sceneName )
 -----------------------------------------------------------------------------------------
 
 soundOn = true
-moveFireballH = true
-moveFireballV = true
-scrollSpeedFireball = 3
+scrollSpeedFireball1 = 3
+scrollSpeedFireball2 = 1.6
+scrollSpeedFireball3 = 4
+
+numLives = 3
 
 -----------------------------------------------------------------------------------------
 -- LOCAL VARIABLES
@@ -57,14 +59,13 @@ local fireball3
 local blackHole
 local character
 
-local heart1
-local heart2
-local heart3
-local numLives = 3
-
 local rArrow 
 local uArrow
 local lArrow
+
+local heart1
+local heart2
+local heart3
 
 local motionx = 0
 local SPEED = 7.5
@@ -76,15 +77,31 @@ local rightW
 local topW
 local floor
 
+local moveFireball1R = true
+local moveFireball1D = false
+local moveFireball1L = false
+local moveFireball1U = false
+
+local moveFireball2R = true
+local moveFireball2D = false
+local moveFireball2L = false
+local moveFireball2U = false
+
+local moveFireball3R = false
+local moveFireball3D = false
+local moveFireball3L = true
+local moveFireball3U = false
+
 local oxygenTank1
 local oxygenTank2
 local oxygenTank3
 local theOxygenTank
 
-local questionsAnswered = 0
-
 local muteButton
 local unmuteButton
+
+local correctAnswers = 0
+local wrongAnswers = 0
 
 -----------------------------------------------------------------------------------------
 -- LOCAL SOUNDS
@@ -155,8 +172,111 @@ local function RemoveRuntimeListeners()
 end
 
 local function MoveFireball1()
-    if (moveFireballH == true) then
-       fireball1.x = fireball1.x + scrollSpeedFireball
+    if (moveFireball1R == true) then
+       fireball1.x = fireball1.x + scrollSpeedFireball1
+        if (fireball1.x >= 510) then
+            moveFireball1R = false
+            moveFireball1D = true
+            moveFireball1L = false
+            moveFireball1U = false
+        end
+
+    elseif (moveFireball1D == true) then
+        fireball1.y = fireball1.y + scrollSpeedFireball1
+        if (fireball1.y >= 650) then
+            moveFireball1D = false
+            moveFireball1R = false
+            moveFireball1L = true
+            moveFireball1U = false
+        end
+    elseif (moveFireball1L == true) then
+        fireball1.x = fireball1.x - scrollSpeedFireball1
+        if (fireball1.x <= 270) then
+            moveFireball1D = false
+            moveFireball1R = false
+            moveFireball1L = false
+            moveFireball1U = true
+        end
+    elseif (moveFireball1U == true) then
+        fireball1.y = fireball1.y - scrollSpeedFireball1
+        if (fireball1.y <= 450) then
+            moveFireball1D = false
+            moveFireball1R = true
+            moveFireball1L = false
+            moveFireball1U = false
+        end
+    end
+end
+
+local function MoveFireball2()
+    if (moveFireball2R == true) then
+       fireball2.x = fireball2.x + scrollSpeedFireball2
+        if (fireball2.x >= 1000) then
+            moveFireball2R = false
+            moveFireball2D = false
+            moveFireball2L = true
+            moveFireball2U = false
+        end
+    elseif (moveFireball2L == true) then
+        fireball2.x = fireball2.x - scrollSpeedFireball2
+        if (fireball2.x <= 800) then
+            moveFireball2D = false
+            moveFireball2R = true
+            moveFireball2L = false
+            moveFireball2U = false
+        end
+    end
+end
+
+local function MoveFireball3()
+    if (moveFireball3L == true) then
+       fireball3.x = fireball3.x - scrollSpeedFireball3
+        if (fireball3.x <= 515) then
+            moveFireball3R = false
+            moveFireball3D = true
+            moveFireball3L = false
+            moveFireball3U = false
+        end
+    elseif (moveFireball3D == true) then
+        fireball3.y = fireball3.y + scrollSpeedFireball3
+        if (fireball3.y >= 330) then
+            moveFireball3D = false
+            moveFireball3R = true
+            moveFireball3L = false
+            moveFireball3U = false
+        end
+    elseif (moveFireball3R == true) then
+        fireball3.x = fireball3.x + scrollSpeedFireball3
+        if (fireball3.x >= 740) then
+            moveFireball3D = false
+            moveFireball3R = false
+            moveFireball3L = false
+            moveFireball3U = true
+        end
+    elseif (moveFireball3U == true) then
+        fireball3.y = fireball3.y - scrollSpeedFireball3
+        if (fireball3.y <= 135) then
+            moveFireball3D = false
+            moveFireball3R = false
+            moveFireball3L = true
+            moveFireball3U = false
+        end
+    end
+end
+
+local function LoseHearts()
+    if (numLives == 2) then
+        heart3.isVisible = false
+        heart2.isVisible = true
+        heart1.isVisible = true
+    elseif (numLives == 1) then
+        heart3.isVisible = false
+        heart2.isVisible = false
+        heart1.isVisible = true
+    elseif (numLives == 0) then
+        heart3.isVisible = false
+        heart2.isVisible = false
+        heart1.isVisible = false
     end
 end
 
@@ -201,11 +321,11 @@ local function RemoveMuteUnMuteListeners()
 end
 
 local function ReplaceCharacter()
-    character = display.newImageRect("Images/astronaut.png", 100, 50)
+    character = display.newImage("Images/astronaut.png", 50, 50)
     character.x = display.contentWidth * 0.5 / 8
     character.y = display.contentHeight  * 0.1 / 3
-    character.width = 110
-    character.height = 120
+    character.width = 75
+    character.height = 100
     character.myName = "Astronaut"
 
     -- intialize horizontal movement of character
@@ -378,7 +498,7 @@ local function AddPhysicsBodies()
 
     physics.addBody(fireball1, "static", {density=1.0, friction=0.3, bounce=0.2})
     physics.addBody(fireball2, "static", {density=1.0, friction=0.3, bounce=0.2})
-    physics.addBody(fireball2, "static", {density=1.0, friction=0.3, bounce=0.2})
+    physics.addBody(fireball3, "static", {density=1.0, friction=0.3, bounce=0.2})
 
     physics.addBody(blackHole, "static", {density=1, friction=0.3, bounce=0.2})
 
@@ -462,23 +582,23 @@ function scene:create( event )
 
     sceneGroup:insert( platform4 )  
 
-    fireball1 = display.newImageRect("Images/fireball.png", 100, 70)
+    fireball1 = display.newImageRect("Images/fireball.png", 50, 50)
     fireball1.x = display.contentWidth * 3 / 8
     fireball1.y = display.contentHeight * 2.8 / 5
     fireball1.myName = "fireball1"
         
     sceneGroup:insert( fireball1)
 
-    fireball2 = display.newImageRect("Images/fireball.png", 100, 70)
-    fireball2.x = display.contentWidth * 6 / 8
-    fireball2.y = display.contentHeight * 2.5 / 5
+    fireball2 = display.newImageRect("Images/fireball.png", 50, 50)
+    fireball2.x = display.contentWidth * 6.37 / 8
+    fireball2.y = display.contentHeight * 2 / 5
     fireball2.myName = "fireball2"
         
     sceneGroup:insert( fireball2)
 
-    fireball3 = display.newImageRect("Images/fireball.png", 100, 70)
-    fireball3.x = display.contentWidth * 5.5 / 8
-    fireball3.y = display.contentHeight * 0.4 / 5
+    fireball3 = display.newImageRect("Images/fireball.png", 50, 50)
+    fireball3.x = display.contentWidth * 4.9 / 8
+    fireball3.y = display.contentHeight * 0.8 / 5
     fireball3.myName = "fireball3"
         
     sceneGroup:insert( fireball3)
@@ -519,7 +639,7 @@ function scene:create( event )
 
     --Insert the right arrow
     rArrow = display.newImageRect("Images/Arrow.png", 110, 50)
-    rArrow.x = display.contentWidth * 3 / 10
+    rArrow.x = display.contentWidth * 2.07 / 10
     rArrow.y = display.contentHeight * 9.5 / 10
     rArrow:rotate(180)
    
@@ -528,7 +648,7 @@ function scene:create( event )
 
     --Insert the left arrow
     uArrow = display.newImageRect("Images/Arrow.png", 110, 50)
-    uArrow.x = display.contentWidth* 2/10
+    uArrow.x = display.contentWidth* 1.34/10
     uArrow.y = display.contentHeight * 8.4 / 10
     uArrow:rotate(90)
 
@@ -537,7 +657,7 @@ function scene:create( event )
 
     --Insert the left arrow
     lArrow = display.newImageRect("Images/Arrow.png", 110, 50)
-    lArrow.x = display.contentWidth * 1 / 10
+    lArrow.x = display.contentWidth * 0.6 / 10
     lArrow.y = display.contentHeight * 9.5 / 10
        
     -- Insert objects into the scene group in order to ONLY be associated with this scene
@@ -571,27 +691,27 @@ function scene:create( event )
     sceneGroup:insert( floor )
 
     --oxygenTank1
-    oxygenTank1 = display.newImageRect ("Images/oxygenTank.png", 175, 100)
+    oxygenTank1 = display.newImageRect ("Images/oxygenTank.png", 60, 75)
     oxygenTank1.x = display.contentWidth * 3/8
-    oxygenTank1.y = 530
+    oxygenTank1.y = 540
     oxygenTank1.myName = "oxygenTank1"
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( oxygenTank1 )
 
     --oxygenTank2
-    oxygenTank2 = display.newImageRect ("Images/oxygenTank.png", 175, 100)
+    oxygenTank2 = display.newImageRect ("Images/oxygenTank.png", 60, 75)
     oxygenTank2.x = 625
-    oxygenTank2.y = 225
+    oxygenTank2.y = 235
     oxygenTank2.myName = "oxygenTank2"
 
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( oxygenTank2 )
 
     --oxygenTank3
-    oxygenTank3 = display.newImageRect ("Images/oxygenTank.png", 175, 100)
+    oxygenTank3 = display.newImageRect ("Images/oxygenTank.png", 60, 75)
     oxygenTank3.x = 940
-    oxygenTank3.y = 420
+    oxygenTank3.y = 428
     oxygenTank3.myName = "oxygenTank3"
     
     -- Insert objects into the scene group in order to ONLY be associated with this scene
@@ -661,6 +781,9 @@ function scene:show( event )
         -- make all soccer oxygen tanks visible
         MakeOxygenTanksVisible()
 
+        -- make the hearts go away if they get an answer wrong
+        LoseHearts()
+
         -- make all lives visible
         MakeHeartsVisible()
 
@@ -678,6 +801,8 @@ function scene:show( event )
 
         -- add the fireball movement functionalities
         Runtime:addEventListener("enterFrame", MoveFireball1)
+        Runtime:addEventListener("enterFrame", MoveFireball2)
+        Runtime:addEventListener("enterFrame", MoveFireball3)
     end
 
 end --function scene:show( event )

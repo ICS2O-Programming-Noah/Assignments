@@ -31,6 +31,12 @@ sceneName = "level1_question"
 local scene = composer.newScene( sceneName )
 
 -----------------------------------------------------------------------------------------
+-- GLOBAL VARIABLES
+-----------------------------------------------------------------------------------------
+
+numLives = 3
+
+-----------------------------------------------------------------------------------------
 -- LOCAL VARIABLES
 -----------------------------------------------------------------------------------------
 
@@ -100,6 +106,7 @@ local function TouchListenerWrongAnswer(touch)
     
     if (touch.phase == "ended") then
         incorrectSoundChanel = audio.play(incorrectSound)
+        numLives = numLives - 1
         BackToLevel1( )
         
         
@@ -112,6 +119,7 @@ local function TouchListenerWrongAnswer2(touch)
     
     if (touch.phase == "ended") then
         incorrectSoundChanel = audio.play(incorrectSound)
+        numLives = numLives - 1
         BackToLevel1( )
         
     end 
@@ -126,6 +134,16 @@ local function TouchListenerWrongAnswer3(touch)
         BackToLevel1( )
         
     end 
+end
+
+local function LoseLives ()
+    if (userAnswer == wrongAnswer1) then
+        numLives = numLives - 1
+    elseif (userAnswer == wrongAnswer2) then
+        numLives = numLives - 1
+    elseif (userAnswer == wrongAnswer3) then
+        numLives = numLives - 1
+    end
 end
 
 
@@ -309,6 +327,7 @@ function scene:show( event )
         DisplayQuestion()
         PositionAnswers()
         AddTextListeners()
+        LoseLives()
     end
 
 end --function scene:show( event )
