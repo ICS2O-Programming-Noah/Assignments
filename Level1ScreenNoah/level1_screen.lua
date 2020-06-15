@@ -421,6 +421,11 @@ local function onCollision( self, event )
             -- get the oxygenTank that the user hit
             theOxygenTank = event.target
 
+            -- stop the fireballs from moving
+            scrollSpeedFireball1 = 0
+            scrollSpeedFireball2 = 0
+            scrollSpeedFireball3 = 0
+
             -- stop the character from moving
             motionx = 0
 
@@ -527,15 +532,23 @@ end
 
 function ResumeGame()
 
+    print ("***numLives" .. numLives)
+    LoseHearts()
+
     -- make character visible again
     character.isVisible = true
+
+    -- start the fireball movements
+    scrollSpeedFireball1 = 3
+    scrollSpeedFireball2 = 1.6
+    scrollSpeedFireball3 = 4
     
     if (questionsAnswered > 0) then
+        print ("***questionsAnswered = " .. questionsAnswered)
         if (theOxygenTank ~= nil) and (theOxygenTank.isBodyActive == true) then
             physics.removeBody(theOxygenTank)
             theOxygenTank.isVisible = false
         end
-        LoseHearts()
     end
 
 end
@@ -834,6 +847,7 @@ function scene:hide( event )
         RemoveArrowEventListeners()
         RemoveRuntimeListeners()
         RemoveMuteUnMuteListeners()
+
         display.remove(character)
     end
 
