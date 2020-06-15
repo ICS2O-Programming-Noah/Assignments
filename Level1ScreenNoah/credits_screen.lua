@@ -38,7 +38,6 @@ local function BackTransition( )
     composer.gotoScene( "main_menu", {effect = "slideRight", time = 1000})
 end
 
-
 -----------------------------------------------------------------------------------------
 -- GLOBAL SCENE FUNCTIONS
 -----------------------------------------------------------------------------------------

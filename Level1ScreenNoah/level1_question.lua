@@ -34,8 +34,6 @@ local scene = composer.newScene( sceneName )
 -- GLOBAL VARIABLES
 -----------------------------------------------------------------------------------------
 
-numLives = 3
-
 -----------------------------------------------------------------------------------------
 -- LOCAL VARIABLES
 -----------------------------------------------------------------------------------------
@@ -128,11 +126,11 @@ end
 --checking to see if the user pressed the right answer and bring them back to level 1
 local function TouchListenerWrongAnswer3(touch)
     userAnswer = wrongText3.text
-    
+
     if (touch.phase == "ended") then
         incorrectSoundChanel = audio.play(incorrectSound)
-        BackToLevel1( )
-        
+        numLives = numLives - 1
+        BackToLevel1( )        
     end 
 end
 

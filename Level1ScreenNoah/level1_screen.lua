@@ -65,17 +65,18 @@ local lArrow
 
 local heart1
 local heart2
-local heart3
 
 local motionx = 0
 local SPEED = 7.5
-local LINEAR_VELOCITY = -100
+local LINEAR_VELOCITY = -200
 local GRAVITY = 8
 
 local leftW 
 local rightW
 local topW
 local floor
+
+local questionsAnswered
 
 local moveFireball1R = true
 local moveFireball1D = false
@@ -97,17 +98,11 @@ local oxygenTank2
 local oxygenTank3
 local theOxygenTank
 
-local muteButton
-local unmuteButton
-
-local correctAnswers = 0
-local wrongAnswers = 0
-
 -----------------------------------------------------------------------------------------
 -- LOCAL SOUNDS
 -----------------------------------------------------------------------------------------
 
-local bkgMusicL1 = audio.loadSound("Sounds/bkgMusicL1.wav")
+local bkgMusicL1 = audio.loadSound("Sounds/bkg.mp3")
 local bkgMusicL1Channel
 
 local hittingfireballound = audio.loadSound("Sounds/hitfireball.mp3")
@@ -264,60 +259,19 @@ local function MoveFireball3()
     end
 end
 
+local function YouLoseTransition()
+    composer.gotoScene( "you_lose" )
+end
+
 local function LoseHearts()
     if (numLives == 2) then
         heart1.isVisible = true
-        heart2.isVisible = true
-        heart3.isVisible = false
-    elseif (numLives == 1) then
-        heart1.isVisible = true
         heart2.isVisible = false
-        heart3.isVisible = false
-    elseif (numLives == 0) then
+    elseif (numLives == 1) then
         heart1.isVisible = false
         heart2.isVisible = false
-        heart3.isVisible = false
+        YouLoseTransition()
     end
-end
-
-local function Mute (touch)
-
-    if (touch.phase == "ended") then
-
-        -- pause all Sounds
-        audio.pause(bgSoundL1Channel)
-
-        -- make soundOn false
-        soundOn = false
-
-        -- make mute button visible
-        muteButton.isVisible = true
-        unmuteButton.isVisible = false
-    end
-end
-
-local function UnMute (touch)
-    if (touch.phase == "ended") then
-        --resume all Sounds
-        audio.resume(bkgMusicL1Channel)
-
-        -- make soundOn true
-        soundOn = true
-
-        -- make unmute button visible
-        muteButton.isVisible = false
-        unmuteButton.isVisible = true
-    end
-end
-
-local function AddMuteUnMuteListeners()
-    unmuteButton:addEventListener("touch", Mute)
-    muteButton:addEventListener("touch", UnMute)
-end
-
-local function RemoveMuteUnMuteListeners()
-    unmuteButton:removeEventListener("touch", Mute)
-    muteButton:removeEventListener("touch", UnMute)
 end
 
 local function ReplaceCharacter()
@@ -355,10 +309,6 @@ local function MakeHeartsVisible()
     heart2.isVisible = true
 end
 
-local function YouLoseTransition()
-    composer.gotoScene( "you_lose" )
-end
-
 local function onCollision( self, event )
     -- for testing purposes
     --print( event.target )        --the first object in the collision
@@ -370,7 +320,7 @@ local function onCollision( self, event )
     if ( event.phase == "began" ) then
 
         --Pop sound
-        -- hittingfireballoundChannel = audio.play(hittingfireballound)
+        hittingfireballoundChannel = audio.play(hittingfireballound)
 
         if  (event.target.myName == "fireball1") or 
             (event.target.myName == "fireball2") or
@@ -394,22 +344,14 @@ local function onCollision( self, event )
             if (numLives == 2) then
                 -- update hearts
                 heart1.isVisible = true
-                heart2.isVisible = true
-                heart3.isVisible = false
+                heart2.isVisible = false
                 timer.performWithDelay(200, ReplaceCharacter) 
 
             elseif (numLives == 1) then
                 -- update hearts
-                heart1.isVisible = true
-                heart2.isVisible = false
-                heart3.isVisible = false
-                timer.performWithDelay(200, ReplaceCharacter)
-
-            elseif (numLives == 0) then
-                -- update hearts
                 heart1.isVisible = false
                 heart2.isVisible = false
-                heart3.isVisible = false
+                timer.performWithDelay(200, ReplaceCharacter)
                 timer.performWithDelay(200, YouLoseTransition)
             end
         end
@@ -435,7 +377,7 @@ local function onCollision( self, event )
             -- show overlay with math question
             composer.showOverlay( "level1_question", { isModal = true, effect = "fade", time = 100})
 
-            -- Increment questions answered
+            -- increment questions answered
             questionsAnswered = questionsAnswered + 1
         end
 
@@ -642,14 +584,6 @@ function scene:create( event )
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( heart2 )
 
-    heart3 = display.newImageRect("Images/heart.png", 100, 100)
-    heart3.x = 270
-    heart3.y = 50
-    heart3.isVisible = true
-
-    -- Insert objects into the scene group in order to ONLY be associated with this scene
-    sceneGroup:insert( heart3 )
-
     --Insert the right arrow
     rArrow = display.newImageRect("Images/Arrow.png", 110, 50)
     rArrow.x = display.contentWidth * 2.07 / 10
@@ -730,23 +664,6 @@ function scene:create( event )
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( oxygenTank3 )
 
-    -- mute button
-    muteButton = display.newImageRect("Images/mute.png", 70, 70)
-    muteButton.x = 950
-    muteButton.y = 60
-    muteButton.isVisible = false
-
-    -- Insert objects into the scene group in order to ONLY be associated with this scene
-    sceneGroup:insert( muteButton )
-    -- unmute button
-    unmuteButton = display.newImageRect("Images/unmute.png", 70, 70)
-    unmuteButton.x = 950
-    unmuteButton.y = 60
-    unmuteButton.isVisible = true
-
-    -- Insert objects into the scene group in order to ONLY be associated with this scene
-    sceneGroup:insert( unmuteButton )
-
 end --function scene:create( event )
 
 -----------------------------------------------------------------------------------------
@@ -778,18 +695,6 @@ function scene:show( event )
 
         numLives = 3
         questionsAnswered = 0
-
-        if (soundOn == true) then
-            -- play the background music
-            bkgMusicL1Channel = audio.play(bkgMusicL1, {channel = 1, loops = -1})
-            muteButton.isVisible = false
-            unmuteButton.isVisible = true
-        else
-            -- pause the background music
-            audio.pause(bkgMusicL1Channel)
-            muteButton.isVisible = true
-            unmuteButton.isVisible = false
-        end
 
         -- make all soccer oxygen tanks visible
         MakeOxygenTanksVisible()
