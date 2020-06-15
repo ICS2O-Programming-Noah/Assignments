@@ -98,6 +98,13 @@ local oxygenTank2
 local oxygenTank3
 local theOxygenTank
 
+local totalSeconds = 30
+local secondsLeft = 30
+local clockText
+local countDownTimer
+
+local stopGame = false
+
 -----------------------------------------------------------------------------------------
 -- LOCAL SOUNDS
 -----------------------------------------------------------------------------------------
@@ -260,6 +267,9 @@ local function MoveFireball3()
 end
 
 local function YouLoseTransition()
+    audio.stop(bkgMusicL1Channel)
+    timer.cancel(countDownTimer)
+    clockText.isVisible = false
     composer.gotoScene( "you_lose" )
 end
 
@@ -270,9 +280,35 @@ local function LoseHearts()
     elseif (numLives == 1) then
         heart1.isVisible = false
         heart2.isVisible = false
+        timer.cancel(countDownTimer)
+        clockText.isVisible = false
+        audio.stop(bkgMusicL1Channel)
         YouLoseTransition()
     end
 end
+
+local function UpdateTime()
+
+    -- decrement the number of seconds
+    secondsLeft = secondsLeft - 1
+
+    -- display the number of seconds left in the clock object
+    clockText.text = secondsLeft .. ""
+
+    if (secondsLeft == 0) then
+        secondsLeft = 0
+        timer.cancel(countDownTimer)
+        clockText.isVisible = false
+        audio.stop(bkgMusicL1Channel)
+        YouLoseTransition()
+    end
+end
+
+local function StartTimer()
+    -- create a countdown timer that loops infintely
+    countDownTimer = timer.performWithDelay(1000, UpdateTime, 0)
+end
+
 
 local function ReplaceCharacter()
     character = display.newImage("Images/astronaut.png", 50, 50)
@@ -385,6 +421,8 @@ local function onCollision( self, event )
             --check to see if the user has answered 3 questions
             if (questionsAnswered == 3) then
                 -- after getting 3 questions right, go to the you win screen
+                timer.cancel(countDownTimer)
+                clockText.isVisible = false
                 composer.gotoScene( "you_win" )
             end
         end        
@@ -664,6 +702,11 @@ function scene:create( event )
     -- Insert objects into the scene group in order to ONLY be associated with this scene
     sceneGroup:insert( oxygenTank3 )
 
+    clockText = display.newText(secondsLeft .. "", display.contentWidth * 1/10, display.contentHeight * 1/7, nil, 120)
+    clockText.x = 100
+    clockText.y = 150
+    clockText:setTextColor(0/255, 0/255, 204/255)
+
 end --function scene:create( event )
 
 -----------------------------------------------------------------------------------------
@@ -713,6 +756,8 @@ function scene:show( event )
 
         -- add the mute and unmute functionality to the buttons
         AddMuteUnMuteListeners()
+
+        StartTimer()
 
         -- add the fireball movement functionalities
         Runtime:addEventListener("enterFrame", MoveFireball1)
