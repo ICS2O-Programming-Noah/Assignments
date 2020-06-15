@@ -174,7 +174,7 @@ end
 local function MoveFireball1()
     if (moveFireball1R == true) then
        fireball1.x = fireball1.x + scrollSpeedFireball1
-        if (fireball1.x >= 510) then
+        if (fireball1.x >= 540) then
             moveFireball1R = false
             moveFireball1D = true
             moveFireball1L = false
@@ -191,7 +191,7 @@ local function MoveFireball1()
         end
     elseif (moveFireball1L == true) then
         fireball1.x = fireball1.x - scrollSpeedFireball1
-        if (fireball1.x <= 270) then
+        if (fireball1.x <= 210) then
             moveFireball1D = false
             moveFireball1R = false
             moveFireball1L = false
@@ -199,7 +199,7 @@ local function MoveFireball1()
         end
     elseif (moveFireball1U == true) then
         fireball1.y = fireball1.y - scrollSpeedFireball1
-        if (fireball1.y <= 450) then
+        if (fireball1.y <= 400) then
             moveFireball1D = false
             moveFireball1R = true
             moveFireball1L = false
@@ -231,7 +231,7 @@ end
 local function MoveFireball3()
     if (moveFireball3L == true) then
        fireball3.x = fireball3.x - scrollSpeedFireball3
-        if (fireball3.x <= 515) then
+        if (fireball3.x <= 470) then
             moveFireball3R = false
             moveFireball3D = true
             moveFireball3L = false
@@ -247,7 +247,7 @@ local function MoveFireball3()
         end
     elseif (moveFireball3R == true) then
         fireball3.x = fireball3.x + scrollSpeedFireball3
-        if (fireball3.x >= 740) then
+        if (fireball3.x >= 780) then
             moveFireball3D = false
             moveFireball3R = false
             moveFireball3L = false
@@ -266,17 +266,17 @@ end
 
 local function LoseHearts()
     if (numLives == 2) then
-        heart3.isVisible = false
+        heart1.isVisible = true
         heart2.isVisible = true
-        heart1.isVisible = true
+        heart3.isVisible = false
     elseif (numLives == 1) then
-        heart3.isVisible = false
-        heart2.isVisible = false
         heart1.isVisible = true
-    elseif (numLives == 0) then
-        heart3.isVisible = false
         heart2.isVisible = false
+        heart3.isVisible = false
+    elseif (numLives == 0) then
         heart1.isVisible = false
+        heart2.isVisible = false
+        heart3.isVisible = false
     end
 end
 
@@ -443,8 +443,7 @@ local function onCollision( self, event )
         end        
 
     end
-end
-
+end 
 
 local function AddCollisionListeners()
     -- if character collides with fireball, onCollision will be called
@@ -536,6 +535,7 @@ function ResumeGame()
             physics.removeBody(theOxygenTank)
             theOxygenTank.isVisible = false
         end
+        LoseHearts()
     end
 
 end
@@ -780,9 +780,6 @@ function scene:show( event )
 
         -- make all soccer oxygen tanks visible
         MakeOxygenTanksVisible()
-
-        -- make the hearts go away if they get an answer wrong
-        LoseHearts()
 
         -- make all lives visible
         MakeHeartsVisible()
